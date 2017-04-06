@@ -33,28 +33,31 @@ func sayhello(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Welcome to IoP IP bot! Beedo boop bop beeda beep boop") // send data to client side
 }
 
-func getIPAdress(r *http.Request) string {
-    for _, h := range []string{"X-Forwarded-For", "X-Real-Ip"} {
-        addresses := strings.Split(r.Header.Get(h), ",")
-        // march from right to left until we get a public address
-        // that will be the address right before our proxy.
-        for i := len(addresses) -1 ; i >= 0; i-- {
-            ip := strings.TrimSpace(addresses[i])
-            // header can contain spaces too, strip those out.
-            return net.ParseIP(ip).String()
-            //if !realIP.IsGlobalUnicast() || isPrivateSubnet(realIP) {
-            //    // bad address, go to next
-            //    continue
-            //}
-            //return ip
-        }
-    }
-    return ""
-}
 
+// FromRequest extracts the user IP address from req, if present.
+func IPFromRequest(r *http.Request) (net.IP, error) {
+    ip, _, err := net.SplitHostPort(r.RemoteAddr)
+    if err != nil {
+        return nil, fmt.Errorf("userip: %q is not IP:port", r.RemoteAddr)
+    }
+
+    userIP := net.ParseIP(ip)
+    if userIP == nil {
+        return nil, fmt.Errorf("userip: %q is not IP:port", r.RemoteAddr)
+    }
+    return userIP, nil
+}
 func sayIp(w http.ResponseWriter, r *http.Request) {
 
-    fmt.Fprintf(w, getIPAdress(r)) // send data to client side
+    ip , err := IPFromRequest(r)
+
+    if err != nil {
+        log.Panic(err.Error())
+        http.Error(w, err.Error(), 500)
+        return
+    }
+
+    fmt.Fprintf(w, ip.String()) // send data to client side
 }
 
 // IsIPv4 check if the string is an IP version 4.
@@ -264,7 +267,7 @@ func main() {
     log.SetOutput(logf)
 
     http.HandleFunc("/", route) // set router
-    err = http.ListenAndServe(":80", nil) // set listen port
+    err = http.ListenAndServe(":9090", nil) // set listen port
     if err != nil {
         log.Fatal("ListenAndServe: ", err)
     }
