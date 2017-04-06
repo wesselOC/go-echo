@@ -28,6 +28,11 @@ func init() {
     r = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
+func Log(l *log.Logger, msg string) {
+    l.SetPrefix(time.Now().Format("2006-01-02 15:04:05") + " [AAA] ")
+    l.Print(msg)
+}
+
 
 func sayhello(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Welcome to IoP IP bot! Beedo boop bop beeda beep boop") // send data to client side
@@ -36,6 +41,7 @@ func sayhello(w http.ResponseWriter, r *http.Request) {
 
 // FromRequest extracts the user IP address from req, if present.
 func IPFromRequest(r *http.Request) (net.IP, error) {
+    fmt.Println("Checking hosts...")
     ip, _, err := net.SplitHostPort(r.RemoteAddr)
     if err != nil {
         return nil, fmt.Errorf("userip: %q is not IP:port", r.RemoteAddr)
@@ -45,8 +51,11 @@ func IPFromRequest(r *http.Request) (net.IP, error) {
     if userIP == nil {
         return nil, fmt.Errorf("userip: %q is not IP:port", r.RemoteAddr)
     }
+    fmt.Println("IP found.." + userIP.String())
     return userIP, nil
 }
+
+
 func sayIp(w http.ResponseWriter, r *http.Request) {
 
     ip , err := IPFromRequest(r)
@@ -57,7 +66,12 @@ func sayIp(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    fmt.Fprintf(w, ip.String()) // send data to client side
+    if(ip != nil){
+        fmt.Fprintf(w, ip.String()) // send data to client side
+    }else{
+        fmt.Fprintf(w, "Not Found")
+    }
+
 }
 
 // IsIPv4 check if the string is an IP version 4.
@@ -267,7 +281,7 @@ func main() {
     log.SetOutput(logf)
 
     http.HandleFunc("/", route) // set router
-    err = http.ListenAndServe(":80", nil) // set listen port
+    err = http.ListenAndServe(":9090", nil) // set listen port
     if err != nil {
         log.Fatal("ListenAndServe: ", err)
     }
