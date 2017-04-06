@@ -28,11 +28,6 @@ func init() {
     r = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-func Log(l *log.Logger, msg string) {
-    l.SetPrefix(time.Now().Format("2006-01-02 15:04:05") + " [AAA] ")
-    l.Print(msg)
-}
-
 
 func sayhello(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Welcome to IoP IP bot! Beedo boop bop beeda beep boop") // send data to client side
@@ -281,7 +276,7 @@ func main() {
     log.SetOutput(logf)
 
     http.HandleFunc("/", route) // set router
-    err = http.ListenAndServe(":80", nil) // set listen port
+    err = http.ListenAndServe(":9090", nil) // set listen port
     if err != nil {
         log.Fatal("ListenAndServe: ", err)
     }
