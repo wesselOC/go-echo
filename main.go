@@ -177,7 +177,7 @@ func checkConnection(w http.ResponseWriter, r *http.Request) {
     for {
         // Get net.TCPConn object
         //10 second time out
-        timeoutDuration := 1 * time.Second
+        timeoutDuration := 10 * time.Second
         conn, err := net.DialTimeout("tcp", ip + ":" + port, timeoutDuration)
 
         //if there was an issue
