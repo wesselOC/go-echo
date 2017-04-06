@@ -33,8 +33,29 @@ func sayhello(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Welcome to IoP IP bot! Beedo boop bop beeda beep boop") // send data to client side
 }
 
+func getIPAdress(r *http.Request) string {
+    for _, h := range []string{"X-Forwarded-For", "X-Real-Ip"} {
+        addresses := strings.Split(r.Header.Get(h), ",")
+        // march from right to left until we get a public address
+        // that will be the address right before our proxy.
+        for i := len(addresses) -1 ; i >= 0; i-- {
+            ip := strings.TrimSpace(addresses[i])
+            fmt.Println(ip)
+            // header can contain spaces too, strip those out.
+            fmt.Println(net.ParseIP(ip).String())
+            //if !realIP.IsGlobalUnicast() || isPrivateSubnet(realIP) {
+            //    // bad address, go to next
+            //    continue
+            //}
+            //return ip
+        }
+    }
+    return ""
+}
+
 func sayIp(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, r.Header.Get("X-Forwarded-For")) // send data to client side
+
+    fmt.Fprintf(w, getIPAdress(r)) // send data to client side
 }
 
 // IsIPv4 check if the string is an IP version 4.
