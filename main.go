@@ -40,9 +40,8 @@ func getIPAdress(r *http.Request) string {
         // that will be the address right before our proxy.
         for i := len(addresses) -1 ; i >= 0; i-- {
             ip := strings.TrimSpace(addresses[i])
-            fmt.Println(ip)
             // header can contain spaces too, strip those out.
-            fmt.Println(net.ParseIP(ip).String())
+            return net.ParseIP(ip).String()
             //if !realIP.IsGlobalUnicast() || isPrivateSubnet(realIP) {
             //    // bad address, go to next
             //    continue
