@@ -13,10 +13,13 @@ import (
     "bufio"
     "strconv"
     "os"
+    "github.com/didip/tollbooth"
 )
 
 const (
     logFileName = "go-echo.log"
+    //number  of requests per minute to allow
+    requestLimit = 20
 )
 
 //Globals
@@ -275,7 +278,8 @@ func main() {
 
     log.SetOutput(logf)
 
-    http.HandleFunc("/", route) // set router
+
+    http.Handle("/", tollbooth.LimitFuncHandler(tollbooth.NewLimiter(requestLimit, time.Minute), route)) // set router
     err = http.ListenAndServe(":80", nil) // set listen port
     if err != nil {
         log.Fatal("ListenAndServe: ", err)
