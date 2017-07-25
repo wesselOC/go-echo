@@ -1,8 +1,10 @@
 # go-echo
-Webserver that echos in go
 
-Installation instructions
+> Webserver that echos in go
 
+## Installation instructions
+
+```
 cd /opt/
 sudo git clone https://github.com/wesselOC/go-echo.git
 sudo chown markus go-echo/ -R
@@ -23,4 +25,4 @@ sudo mkdir /var/log/go-echo/
 sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start go-echo
-
+```
